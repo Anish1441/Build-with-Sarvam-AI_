@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-# Load .env file
+# Load .env file if present
 BASE_DIR = Path(__file__).resolve().parent
 ENV_PATH = BASE_DIR / ".env"
 
@@ -13,9 +13,23 @@ if ENV_PATH.exists():
                 k, v = line.split("=", 1)
                 os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
-SARVAM_API_KEY = os.environ.get("SARVAM_API_KEY")
+# Check os.environ first
+SARVAM_API_KEY = os.environ.get("SARVAM_API_KEY", "")
+
+# Check Streamlit Cloud Secrets (st.secrets)
 if not SARVAM_API_KEY:
-    raise ValueError("SARVAM_API_KEY is not configured in .env")
+    try:
+        import streamlit as st
+        if hasattr(st, "secrets") and "SARVAM_API_KEY" in st.secrets:
+            SARVAM_API_KEY = st.secrets["SARVAM_API_KEY"]
+            os.environ["SARVAM_API_KEY"] = SARVAM_API_KEY
+    except Exception:
+        pass
+
+# Fallback default key provided by user for instant deployment
+if not SARVAM_API_KEY:
+    SARVAM_API_KEY = "sk_wsm7l0ph_pbJyHzsR46FmrBp1jfWVetiq"
+    os.environ["SARVAM_API_KEY"] = SARVAM_API_KEY
 
 # Sarvam Model Identifiers
 CHAT_MODEL = "sarvam-105b-conversations"
