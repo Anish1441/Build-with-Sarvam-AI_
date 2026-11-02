@@ -1,0 +1,20 @@
+# Environment variables & secrets
+.env
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# SQLite local database
+storage/tareekh.db
+
+# Virtual environments
+env/
+venv/
+ENV/
+
+# Streamlit temporary data
+.streamlit/
